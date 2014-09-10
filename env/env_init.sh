@@ -3,16 +3,7 @@
 DBUSER="llf"
 DBPASS="llf"
 
-if [ $# -ne 1 ]; then
-#    echo '指定引数が不正です' 1>&2
-#    echo '実行するには設定ファイル名(.py抜き)を１つ渡してください' 1>&2
-#    exit 1
-    hostname=`hostname`
-    cmd="print \$1 if /${hostname}/ .. /from / and /from\s(\S+)\s/"
-    settings=`perl -ne "$cmd" ../application/settings/__init__.py`
-else
-    settings=$1
-fi
+settings="../application/application/settings.py"
 
 echo "load settings = $settings"
 
@@ -20,7 +11,9 @@ echo "grant select,insert,delete,update,create,drop,file, alter,index on *.* to 
 
 # pip
 pip install -r ./pip_list > /dev/null &
-cp ../tools/hooks/pre-commit.sample ../.git/hooks/pre-commit
+
+# check syntax before git commit
+#cp ../tools/hooks/pre-commit.sample ../.git/hooks/pre-commit
 
 # recreate db
 DATABASE_NAMES=`python -c "from sets import Set;from ${settings} import DATABASES;print ' '.join(list(Set([db['NAME'] for db in DATABASES.values()])))"`
